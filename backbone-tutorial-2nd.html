@@ -6,6 +6,22 @@
   <title>Hello World in Backbone.js - Todo App</title>
 </head>
 <body>
+
+<style type="text/css">
+  #todoapp ul {
+    list-style-type: none; /* Hides bullet points from todo list */
+  }
+  #todo-list input.edit {
+    display: none; /* Hides input box*/
+  }
+  #todo-list .editing label {
+    display: none; /* Hides label text when .editing*/
+  }    
+  #todo-list .editing input.edit {
+    display: inline; /* Shows input text box when .editing*/
+  }    
+</style>
+
   <!-- ========= -->
   <!-- Your HTML -->
   <!-- ========= -->
@@ -19,10 +35,12 @@
   </section>
 </section>
 
+ <!--template-->
   <script type="text/template" id="item-template">
     <div class="view">
       <input class="toggle" type="checkbox">
       <label><%- title %></label>
+      <input class="edit" value="<%- title %>">
     </div>
   </script>
   <!-- ========= -->
@@ -58,17 +76,21 @@
     app.todoList = new app.TodoList();
 
     // Views
-    // renders individual tido items list
+    // renders individual todo items list
     app.TodoView = Backbone.View.extend({
       tagName: 'li',
       template: _.template($('#item-template').html()),
       render: function(){
         this.$el.html(this.template(this.model.toJSON()));
+        this.input = this.$('.edit');
         return this;
-      }
+      },
+      initialize: function(){
+        
+      },
     });
 
-//    var view = new app.TodoView(model: todo);
+
     // renders the full list if todo items calling TodoView for each one
     app.AppView = Backbone.View.extend({
       el: '#todoapp',
@@ -85,16 +107,16 @@
         if(e.which !== 13 || !this.input.val().trim()){  // KeyCode of Enter Key is 13
           return;
         }
-        app.todoList.create(this.newAttributes());
+        app.todoList.create(this.newAttributes()); // app.todoList is instance of Collection
         this.input.val(''); // Clean input box
       },
       addOne: function(todo){
-        var view = new app.TodoView({model: todo});
+        var view = new app.TodoView({model: todo}); // call app.TodoView in line 62
         $('#todo-list').append(view.render().el);
       },
       addAll: function(){
         this.$('#todo-list').html(''); // Clean todo list
-        app.todoList.each(this.addOne, this);
+        app.todoList.each(this.addOne, this); // app.todoList is instance of Collection
       },
       newAttributes: function(){
         return {
@@ -105,6 +127,7 @@
     });
 
     // Initializers
+        <!--var instanceOfTodoView = new app.TodoView();-->
     app.appView = new app.AppView();
   </script>
   
